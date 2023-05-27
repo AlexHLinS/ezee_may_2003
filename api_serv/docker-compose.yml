@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    image: backend-image
+    container_name: api
+    command: uvicorn app:app --host 0.0.0.0 --port 8000
+    volumes:
+      - /var/logs/api:/src/logs
+    ports:
+      - '1337:8000'
+#  mongodb:
+#    image: mongo:latest
+#    container_name: mongodb
+#    restart: always
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - /var/data/db:/data/db
+#
+#volumes:
+#  mongodb_data:

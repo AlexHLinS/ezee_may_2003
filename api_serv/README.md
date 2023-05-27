@@ -1,0 +1,41 @@
+# API
+
+> **Данный проект разработан в рамках хакатона "Лидеры цифровой трансформации 2023"**  
+> Задача №19: Рекомендательный сервис для выбора активностей участниками проекта «Московское долголетие»
+
+# Описание
+
+
+# Стек
+
+https://fastapi.tiangolo.com  
+https://www.uvicorn.org  
+https://motor.readthedocs.io/en/stable/  
+https://beanie-odm.dev  
+https://www.mongodb.com/docs/
+
+# CI/CD
+
+> Для персистентности данных в docker-compose.yml указаны пути
+> для монтирования данных определенных сервисов. Для того,
+> чтобы данные успешно смонтировались необходимо заранее создать
+> соответствующие папки и настроить для них права:
+> ```bash
+> sudo mkdir -p var/data/db 
+> sudo chmod -R 777 /var/data/db & sudo chgrp -R $(id -gn) /var/data/db
+> sudo mkdir -p var/logs/api 
+> sudo chmod -R 777 /var/logs/api & sudo chgrp -R $(id -gn) /var/logs/api
+> ```
+
+
+Для сборки и запуска приложения в корне проекта необходимо выполнить команду:
+
+```commandline
+docker-compose up --build -d
+```
+
+Для остановки всех контейнеров:
+
+```commandline
+docker-compose down
+```
