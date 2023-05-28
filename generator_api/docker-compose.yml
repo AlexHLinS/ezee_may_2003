@@ -1,6 +1,5 @@
 services:
   backend:
-    build: .
     image: recomender-image
     container_name: recomender
     command: python3 main.py
