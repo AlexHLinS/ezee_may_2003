@@ -1,6 +1,7 @@
 services:
   backend:
-    image: recomender-image
+    build: .
+    image: backend-image
     container_name: recomender
     command: python3 main.py
     volumes:
