@@ -1,16 +1,18 @@
 import logging
+import os
 from typing import List
 
-from fastapi import APIRouter, Path, Body
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Body, Depends, Query
 
 from users.models import (
+    SettingsUpdated,
     DemoUser,
     GetUserResponse,
-    PostUserRequest,
     PutUserSettingsRequest,
-    GetUserSettingsResponse, UserLocation, DaytimeSchedule
+    GetUserSettingsResponse
 )
+from orm import get_users_for_demo, User
+from users.utils import get_user_or_404, parse_address
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 
@@ -22,26 +24,16 @@ _logger = logging.getLogger(__name__)
     response_description="Список пользователей для демо",
     response_model=List[DemoUser],
 )
-async def get_demo_users():
+async def get_demo_users(
+        user_ids: List[int] = Query(..., title="Список ID пользователей для демо")
+):
     """
     Получить пользователей для демо
     """
-    return [
-        DemoUser(
-            id=123,
-            name="Григорий",
-            surname="Кузнецов",
-            birthdate="12.03.1951",
-            coldStart=False
-        ),
-        DemoUser(
-            id=456,
-            name="Владимир",
-            surname="Кожевников",
-            birthdate="24.05.1946",
-            coldStart=True
-        )
-    ]
+    env = os.getenv("DEMO_USERS")
+    users = await get_users_for_demo(user_ids=user_ids)
+    demo_users = [DemoUser.build_from_db(u) for u in users]
+    return demo_users
 
 
 @router.get(
@@ -50,54 +42,38 @@ async def get_demo_users():
     response_model=GetUserResponse,
 )
 async def get_user(
-        user_id: int = Path(description="Уникальный идентификатор пользователя"),
+        user: User = Depends(get_user_or_404),
 ):
     """
     Получить пользователя
     """
-    ...
-
-
-@router.post(
-    "/{user_id}"
-)
-async def create_user(
-        user: PostUserRequest = Body(..., title="Данные пользователя для регистрации"),
-):
-    """
-    Создать пользователя
-    """
-    ...
-
-
-@router.delete(
-    "/{user_id}"
-)
-async def delete_user(
-        user_id: int = Path(description="Уникальный идентификатор пользователя"),
-):
-    """
-    Удалить пользователя
-    """
-    ...
+    return GetUserResponse.build_from_db(user)
 
 
 @router.put(
     "/{user_id}/settings"
 )
 async def update_user_settings(
-        user_id: int = Path(description="Уникальный идентификатор пользователя"),
-        settings: PutUserSettingsRequest = Body(..., title="Настройки пользователя"),
+        user: User = Depends(get_user_or_404),
+        new_settings: PutUserSettingsRequest = Body(..., title="Настройки пользователя")
 ):
     """
     Обновить настройки пользователя
     """
-    return JSONResponse(
-        content={
-            "message": f"Settings of user {user_id} has been updated"
-        },
-        status_code=200
-    )
+
+    if new_settings.address:
+        user.profile.settings.address = parse_address(new_settings.address)
+
+    if new_settings.travelTime:
+        user.profile.settings.address = parse_address(new_settings.address)
+
+    if new_settings.schedule:
+        user.profile.settings.schedule = [i.to_db() for i in new_settings.schedule]
+
+    if new_settings.diseases:
+        user.profile.settings.diseases = new_settings.diseases
+
+    return SettingsUpdated(user.user_id)
 
 
 @router.get(
@@ -106,26 +82,9 @@ async def update_user_settings(
     response_model=GetUserSettingsResponse,
 )
 async def get_user_settings(
-        user_id: int = Path(description="Уникальный идентификатор пользователя"),
+        user: User = Depends(get_user_or_404),
 ):
     """
     Получить настройки пользователя
     """
-    return GetUserSettingsResponse(
-        location=UserLocation(
-            address="г.Москва, ул.Пушкина, д.13",
-            latitude="15.123123",
-            longitude="89.213123",
-        ),
-        travelTime=15,
-        schedule=[
-            DaytimeSchedule(),
-            DaytimeSchedule(),
-            DaytimeSchedule(),
-            DaytimeSchedule(),
-            DaytimeSchedule(),
-            DaytimeSchedule(morning=True),
-            DaytimeSchedule(),
-        ],
-        diseases=["варикоз", "артрит"]
-    )
+    return GetUserSettingsResponse.build_from_db(user)

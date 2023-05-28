@@ -1,80 +1,82 @@
 import logging
-import os
-
-from beanie import init_beanie
 
 from datetime import datetime
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 
 from beanie import Document
-from pydantic import BaseModel
+from beanie.odm.operators.find.comparison import In
+from pydantic import BaseModel, Field
 
 _logger = logging.getLogger(__name__)
 
 
 # USER
 
+
 class UserBio(BaseModel):
-    gender: int  # 0 - male; 1 - female
+    gender: int
     name: str
     surname: str
-    birthdate: datetime
-
-    def string_gender(self):
-        return "male" if not self.gender else "female"
+    patron: str
+    birthdate: str
 
 
-class DaytimeSchedule(BaseModel):
+class UserSchedule(BaseModel):
     morning: bool = False
     noon: bool = False
     evening: bool = False
 
 
-class ExtendedSchedule(BaseModel):
-    ...  # TODO: Структуру взять из датасета
+class Location(BaseModel):
+    latitude: str
+    longitude: str
 
 
-class LocationTag(BaseModel):
-    address: str
-    latitude: float
-    longitude: float
-    # TODO: Дополнить полями из датасета
+class AddressTag(BaseModel):
+    city: str
+    road: str
+    house_number: str
+    building: str
+
+
+class UserAddress(BaseModel):
+    raw: str
+    address: Optional[AddressTag]
+    location: Optional[Location]
 
 
 class UserSettings(BaseModel):
-    schedule: List[DaytimeSchedule]  # TODO: Перенести в модели запроса/ответа: = Field(..., min_items=7, max_items=7)
-    travel_time: int = 30  # в минутах
-    location: LocationTag  # TODO: По дефолту задать центр Москвы
-    diseases: Optional[List[str]]  # Если None, то считается, что пользователь не задавал список болезней
-    # TODO: Задать дефолтное расписание при инициализации
+    schedule: List[UserSchedule] = [UserSchedule() for i in range(7)]
+    travel_time: int = 30
+    address: Optional[UserAddress]
+    diseases: Optional[List[str]]
 
 
 class AttendanceScore(BaseModel):
-    value: int  # 1-5
-    comment: str
+    value: Optional[int]
+    comment: Optional[str]
 
 
 class Attendance(BaseModel):
-    activity_id: int
+    group_id: int
     date: datetime
     score: AttendanceScore
 
 
-class Workdata(BaseModel):
-    activity_scores: Dict[str, str]
-    # TODO: Положить инфу о признаке холодного старта
+class UserWorkdata(BaseModel):
+    group_scores: Dict[str, float]
+    recommended_categories: Optional[List[str]]
 
 
 class UserProfile(BaseModel):
     settings: UserSettings
     attendances: List[Attendance]
-    workdata: Workdata
+    workdata: UserWorkdata
 
 
 class User(Document):
-    user_id: int
+    user_id: int = Field(alias="id")
     created: datetime
-    role: str = "user"
     bio: UserBio
     profile: UserProfile
 
@@ -82,61 +84,102 @@ class User(Document):
         name = "users"
 
 
-# ACTIVITY
-
-class ActivityTag(BaseModel):
-    ...
-
-
-class CategoryTag(BaseModel):
-    level: int
-    value: str
-
-
-class ActivitySchedule(BaseModel):
-    period: Tuple[datetime, datetime]
-    # pip install pretty-cron
-    crontab: List[str]
-
+# ACTIVITIES
 
 class ActivityTags(BaseModel):
-    outdoor: bool
-    group: bool
-    seasons: List[str]  # spring/winter/summer/autumn
+    seasons: List[str]
+    additional: List[str]
+
+
+class ActivityCategory(BaseModel):
+    id: int
+    name: str
+
+
+class ActivityCategories(BaseModel):
+    level_1: Optional[ActivityCategory]
+    level_2: Optional[ActivityCategory]
+    level_3: Optional[ActivityCategory]
+
+
+class ActivityMeta(BaseModel):
+    name: str
+    description: Optional[str]
+    picture: Optional[bytes]
+    tags: ActivityTags
+    created: datetime
 
 
 class Activity(Document):
-    activity_id: int
-    created: datetime
-    title: str
-    description: str
-    location: LocationTag
+    activity_id: int = Field(alias="id")
+    category: ActivityCategories
+    meta: ActivityMeta
+
+    class Settings:
+        name = "activities"
+
+
+# GROUPS
+
+class GroupAddress(BaseModel):
+    raw: str
+    address: Optional[AddressTag]
+    location: Optional[Location]
+
+
+class GroupSchedule(BaseModel):
+    raw: str
+    start: Optional[datetime]
+    end: Optional[datetime]
+    cron: List[str]
+
+
+class GroupTags(BaseModel):
     online: bool
-    schedule: List[ActivitySchedule]  # TODO: Взять из датасета
-    category: List[str]  # ["Образование", "Информационные технологии",	"Курсы компьютерной грамотности"]
-    tags: ActivityTags
+    individual: bool
+    outdoor: bool
+    additional: List[str]
 
 
-async def initialize_database():
-    host = os.getenv("MONGO_HOST")
-    assert host, "MONGO_HOST is not defined"
+class GroupMeta(BaseModel):
+    name: str
+    description: Optional[str]
+    picture: Optional[bytes]
+    tags: GroupTags
+    created: datetime
 
-    database = os.getenv("MONGO_DATABASE")
-    assert database, "MONGO_DATABASE is not defined"
 
-    user = os.getenv("MONGO_USER")
-    assert user, "MONGO_USER is not defined"
+class Group(Document):
+    group_id: int = Field(alias="id")
+    activity_id: int
+    address: GroupAddress
+    schedule: GroupSchedule
+    meta: GroupMeta
 
-    password = os.getenv("MONGO_PASSWORD")
-    assert password, "MONGO_PASSWORD is not defined"
+    class Settings:
+        name = "groups"
 
-    connection_string = f"mongodb://{user}:{password}@{host}/{database}"
 
-    await init_beanie(
-        connection_string=connection_string,
-        document_models=[
-            User,
-        ]
-    )
+async def get_users_for_demo(user_ids: List[int]) -> List[User]:
+    users = await User.find(
+        In(User.id, user_ids),
+    ).to_list()
+    return users
 
-    _logger.info(f"MongoDB at {host}/{database} has been initialized")
+
+async def get_user(user_id: int) -> Optional[User]:
+    user = await User.find(
+        User.id == user_id
+    ).first_or_none()
+    return user
+
+
+async def delete_user(user: User):
+    await user.delete()
+
+
+async def get_user_settings(user_id: int) -> Optional[UserSettings]:
+    if (user := await get_user(user_id)) is None:
+        return None
+    user_settings = user.profile.settings
+    return user_settings

@@ -1,0 +1,793 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/{rest_of_path}": {
+      "options": {
+        "summary": "Preflight Handler",
+        "operationId": "preflight_handler__rest_of_path__options",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Rest Of Path",
+              "type": "string"
+            },
+            "name": "rest_of_path",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/demo": {
+      "get": {
+        "tags": [
+          "Пользователи"
+        ],
+        "summary": "Get Demo Users",
+        "description": "Получить пользователей для демо",
+        "operationId": "get_demo_users_users_demo_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Список ID пользователей для демо",
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "name": "user_ids",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список пользователей для демо",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Demo Users Users Demo Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DemoUser"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": [
+          "Пользователи"
+        ],
+        "summary": "Get User",
+        "description": "Получить пользователя",
+        "operationId": "get_user_users__user_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "name": "user_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Данные пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/settings": {
+      "get": {
+        "tags": [
+          "Пользователи"
+        ],
+        "summary": "Get User Settings",
+        "description": "Получить настройки пользователя",
+        "operationId": "get_user_settings_users__user_id__settings_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "name": "user_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Настройки пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserSettingsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Пользователи"
+        ],
+        "summary": "Update User Settings",
+        "description": "Обновить настройки пользователя",
+        "operationId": "update_user_settings_users__user_id__settings_put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "name": "user_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Настройки пользователя",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/PutUserSettingsRequest"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/recommendations/categories": {
+      "get": {
+        "tags": [
+          "Пользователи",
+          "Рекомендации пользователя"
+        ],
+        "summary": "Get Categories",
+        "description": "Получить список категорий активности рекомендованных для пользователя",
+        "operationId": "get_categories_users__user_id__recommendations_categories_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "name": "user_id",
+            "in": "path"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Максимальное количество категорий",
+              "type": "integer",
+              "default": 5
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список рекомендованных для пользователя категорий активности",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Categories Users  User Id  Recommendations Categories Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Пользователи",
+          "Рекомендации пользователя"
+        ],
+        "summary": "Post Categories",
+        "description": "Задать категории активности для пользователя",
+        "operationId": "post_categories_users__user_id__recommendations_categories_post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "name": "user_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Список рекомендованных категорий активности",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/recommendations/groups": {
+      "get": {
+        "tags": [
+          "Пользователи",
+          "Рекомендации пользователя"
+        ],
+        "summary": "Get Groups",
+        "description": "Получить список групп рекомендованных для пользователя к посещению",
+        "operationId": "get_groups_users__user_id__recommendations_groups_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "name": "user_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Название категории активности группы",
+              "type": "string"
+            },
+            "name": "category",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Максимальное количество групп",
+              "type": "integer",
+              "default": 10
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cписок групп рекомендованных для пользователя к посещению",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Groups Users  User Id  Recommendations Groups Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Group"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Category": {
+        "title": "Category",
+        "required": [
+          "title",
+          "description",
+          "picture",
+          "season",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "picture": {
+            "title": "Picture",
+            "type": "string",
+            "format": "binary"
+          },
+          "season": {
+            "title": "Season",
+            "type": "string"
+          },
+          "tags": {
+            "title": "Tags",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DaytimeSchedule": {
+        "title": "DaytimeSchedule",
+        "type": "object",
+        "properties": {
+          "morning": {
+            "title": "Morning",
+            "type": "boolean",
+            "default": false
+          },
+          "noon": {
+            "title": "Noon",
+            "type": "boolean",
+            "default": false
+          },
+          "evening": {
+            "title": "Evening",
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "DemoUser": {
+        "title": "DemoUser",
+        "required": [
+          "id",
+          "gender",
+          "name",
+          "surname",
+          "birthdate",
+          "coldStart"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "gender": {
+            "title": "Gender",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "surname": {
+            "title": "Surname",
+            "type": "string"
+          },
+          "birthdate": {
+            "title": "Birthdate",
+            "type": "string"
+          },
+          "coldStart": {
+            "title": "Coldstart",
+            "type": "boolean"
+          }
+        }
+      },
+      "GetUserResponse": {
+        "title": "GetUserResponse",
+        "required": [
+          "id",
+          "created",
+          "gender",
+          "name",
+          "surname",
+          "birthdate",
+          "coldStart"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "created": {
+            "title": "Created",
+            "type": "string",
+            "format": "date-time"
+          },
+          "gender": {
+            "title": "Gender",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "surname": {
+            "title": "Surname",
+            "type": "string"
+          },
+          "birthdate": {
+            "title": "Birthdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "coldStart": {
+            "title": "Coldstart",
+            "type": "boolean"
+          }
+        }
+      },
+      "GetUserSettingsResponse": {
+        "title": "GetUserSettingsResponse",
+        "required": [
+          "location",
+          "travelTime",
+          "schedule",
+          "diseases"
+        ],
+        "type": "object",
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/UserLocation"
+          },
+          "travelTime": {
+            "title": "Traveltime",
+            "type": "integer"
+          },
+          "schedule": {
+            "title": "Schedule",
+            "maxItems": 7,
+            "minItems": 7,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DaytimeSchedule"
+            }
+          },
+          "diseases": {
+            "title": "Diseases",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Group": {
+        "title": "Group",
+        "required": [
+          "id",
+          "picture",
+          "categories",
+          "title",
+          "description",
+          "location",
+          "schedule"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "picture": {
+            "title": "Picture",
+            "type": "string",
+            "format": "binary"
+          },
+          "categories": {
+            "title": "Categories",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GroupLocation"
+          },
+          "schedule": {
+            "title": "Schedule",
+            "type": "string"
+          }
+        }
+      },
+      "GroupLocation": {
+        "title": "GroupLocation",
+        "required": [
+          "address",
+          "latitude",
+          "longitude",
+          "distance",
+          "isNear",
+          "estimatedTime",
+          "nearestSubwayStations"
+        ],
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "latitude": {
+            "title": "Latitude",
+            "type": "string"
+          },
+          "longitude": {
+            "title": "Longitude",
+            "type": "string"
+          },
+          "distance": {
+            "title": "Distance",
+            "type": "string"
+          },
+          "isNear": {
+            "title": "Isnear",
+            "type": "boolean"
+          },
+          "estimatedTime": {
+            "title": "Estimatedtime",
+            "type": "integer"
+          },
+          "nearestSubwayStations": {
+            "title": "Nearestsubwaystations",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "PutUserSettingsRequest": {
+        "title": "PutUserSettingsRequest",
+        "required": [
+          "address",
+          "travelTime",
+          "schedule",
+          "diseases"
+        ],
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "travelTime": {
+            "title": "Traveltime",
+            "type": "integer"
+          },
+          "schedule": {
+            "title": "Schedule",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DaytimeSchedule"
+            }
+          },
+          "diseases": {
+            "title": "Diseases",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UserLocation": {
+        "title": "UserLocation",
+        "required": [
+          "address",
+          "latitude",
+          "longitude"
+        ],
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "latitude": {
+            "title": "Latitude",
+            "type": "string"
+          },
+          "longitude": {
+            "title": "Longitude",
+            "type": "string"
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
