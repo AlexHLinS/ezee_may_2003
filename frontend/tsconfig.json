@@ -1,0 +1,8 @@
+{
+   "compilerOptions": {
+        "module": "ES2015",
+        "moduleResolution": "nodenext",
+        "jsx": "react-jsx"       
+   },
+   "include": ["asset_type_exporters/*"]
+}
