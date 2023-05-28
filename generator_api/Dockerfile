@@ -7,6 +7,5 @@ COPY ./requirements.txt .
 RUN pip --no-cache-dir install --upgrade -r requirements.txt
 
 COPY ./source /source
-COPY ./data /data
 
 CMD ["python3",  "main.py"]
