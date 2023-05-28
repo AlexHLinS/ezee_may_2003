@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    image: recomender-image
+    container_name: recomender
+    command: python3 main.py
+    volumes:
+      - /var/logs/api:/src/logs
+    ports:
+      - '9999:80'
+

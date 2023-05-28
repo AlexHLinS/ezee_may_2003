@@ -1,12 +1,10 @@
 import uvicorn
 from fastapi import FastAPI
-from source.generator import Payload, router, Answer, ErrorAnswer
+from generator import Payload, router, Answer, ErrorAnswer
 
 
 app = FastAPI(root_path="/")
 
-
-    
 
 @app.get('/')
 async def index():
@@ -19,4 +17,4 @@ async def send(data: Payload)-> Answer | ErrorAnswer:
     return await router(data)
 
 if __name__ == '__main__':
-    uvicorn.run(app, host="0.0.0.0", port=80)
+    uvicorn.run(app, host="0.0.0.0", port=8080)

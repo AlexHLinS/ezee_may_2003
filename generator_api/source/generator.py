@@ -1,12 +1,11 @@
-from typing import Any
 from requests import post, request, HTTPError
 from requests.auth import HTTPBasicAuth
 import json
-from pprint import pprint
-from openai import ChatCompletion, api_key
+import openai as oi
+from openai import ChatCompletion
 from pydantic import BaseModel
 
-from .config import giga_apikeys, hobby_file_name, giga_token, giga_host, giga_model
+from config import giga_apikeys, hobby_file_name, giga_token, giga_host, giga_model
 
 
 class Payload(BaseModel):
@@ -127,7 +126,7 @@ async def send_prompt_to_giga(
     model: str = "GigaChat:v1.5.0",
     url: str = giga_apikeys['POST_chat']
     )->tuple:
-    api_key = token
+    oi.api_key = token
     messages = previous_dialog.copy()
     messages.append({"role":"user", "content": prompt})
    
