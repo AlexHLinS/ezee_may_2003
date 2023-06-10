@@ -1,10 +1,13 @@
+import os
 from typing import List, Dict, Optional
 
 from pydantic import BaseModel, Field
 from starlette.responses import JSONResponse
 
-from orm import Activity, UserAddress, GroupAddress, Location, User
-from orm import Group as OrmGroup
+from orm.common import Location
+from orm.groups import GroupAddress as OrmGroupAddress
+from orm.utils import Group as OrmGroup, Activity as OrmActivity
+from users.recommendations.misc import estimated_distance, get_nearest_subway_stations, fix_address
 
 
 class UserCategoriesSet(JSONResponse):
@@ -26,13 +29,16 @@ class Category(BaseModel):
     tags: List[str] = Field(..., title="")
 
     @classmethod
-    def build_from_db(cls, obj: Activity) -> 'Category':
+    def build_from_db(cls, obj: OrmActivity) -> 'Category':
+        title = obj.category.level_2.name
+        season = "круглый год"
+
         return cls(
-            title=obj.meta.name,
+            title=title,
             description=obj.meta.description,
             picture=obj.meta.picture,
-            season=obj.meta.tags.seasons,
-            tags=obj.tags,
+            season=season,
+            tags=obj.meta.tags.additional,
         )
 
     @staticmethod
@@ -55,60 +61,41 @@ class GroupLocation(BaseModel):
     nearestSubwayStations: Optional[List[Dict[str, int]]] = Field(..., title="")
 
     @classmethod
-    def build_from_db(cls, user_address: UserAddress, group_address: GroupAddress) -> 'GroupLocation':
-        user_loc, group_loc = user_address.location, group_address.location
+    def build_from_db(
+            cls,
+            group_address: OrmGroupAddress,
+            user_location: Location
+    ) -> 'GroupLocation':
+        group_address_string = fix_address(group_address.raw)
+        group_latitude, group_longitude = group_address.location.latitude, group_address.location.longitude
 
-        distance = cls._estimated_distance(user_loc, group_loc)
-        if distance <= 1:
-            isNear = True
-        else:
-            isNear = False
-
-        estimatedTime = cls._estimated_time(distance)
+        group_loc = (float(group_address.location.latitude), float(group_address.location.longitude))
+        user_loc = (float(user_location.latitude), float(user_location.longitude))
+        distance = estimated_distance(user_loc, group_loc)
+        car_time = distance / float(os.getenv("CAR_SPEED", 9)) / 60  # в минутах
+        bus_time = distance / float(os.getenv("BUS_SPEED", 4)) / 60  # в минутах
+        foot_time = distance / float(os.getenv("FOOT_SPEED", 1.2)) / 60  # в минутах
+        is_near = distance <= int(os.getenv("NEAR_DISTANCE", 1000))
 
         return cls(
-            address=group_address.raw,
-            latitude=group_address.location.latitude,
-            longitude=group_address.location.longitude,
-            distance=str(int(distance)),
-            isNear=isNear,
-            estimatedTime=int(estimatedTime),
-            nearestSubwayStations=[]
+            address=group_address_string,
+            latitude=group_latitude,
+            longitude=group_longitude,
+            distance=int(distance),
+            isNear=is_near,
+            estimatedTime=car_time,
+            nearestSubwayStations=[],
+            # TODO: Добавить поля в саму модель
+            # estimatedBusTime=bus_time,
+            # estimatedCarTime=car_time,
+            # estimatedFootTime=foot_time,
+            # nearestSubwayStations=get_nearest_subway_stations(group_loc, threshold=int(os.getenv("NEAR_SUBWAY", 500)))
         )
-
-    @staticmethod
-    def _estimated_time(
-            distance: float
-    ) -> float:
-        """
-        Определяет примерное время пути из первой точки во вторую
-
-        :param distance: расстояние в пути между двумя точками (в метрах)
-
-        :return: оценка времени пути из первой точки во вторую (в минутах)
-        """
-        return distance / 1.1
-
-    @staticmethod
-    def _estimated_distance(
-            loc_1: Location,
-            loc_2: Location
-    ) -> float:
-        """
-        Определяет расстояние в пути между двумя точками
-
-        :param loc_1: координаты первой точки
-        :param loc_2: координаты второй точки
-
-        :return: расстояние в пути между двумя точками (в метрах)
-        """
-        # TODO: Реализовать
-        return 1000
 
 
 class Group(BaseModel):
     id: int = Field(..., title="")
-    picture: Optional[bytes] = Field(..., title="")
+    picture: Optional[bytes] = Field(None, title="")
     categories: List[str] = Field(..., title="")
     title: Optional[str] = Field(..., title="")
     description: Optional[str] = Field(..., title="")
@@ -116,13 +103,28 @@ class Group(BaseModel):
     schedule: Optional[str] = Field(..., title="")
 
     @classmethod
-    def build_from_db(cls, user: User, group: OrmGroup, activity: Activity) -> 'Group':
+    async def build_from_db(
+            cls,
+            group: OrmGroup,
+            activity: OrmActivity,
+            user_location: Location
+    ) -> 'Group':
+        schedule = group.schedule.raw.planned or group.schedule.raw.active_period or group.schedule.raw.close_period
+        if schedule:
+            schedule = schedule.split("; ")[0]
+
         return cls(
-            id=group.id,
-            title=group.meta.name,
-            description=group.meta.description,
-            picture=group.meta.picture,
-            categories=activity.category,
-            location=GroupLocation.build_from_db(user.profile.settings.address, group.address),
-            schedule=group.schedule.raw
+            id=group.group_id,
+            title=activity.category.level_3.name,
+            description=activity.meta.description,
+            categories=[
+                activity.category.level_1.name,
+                activity.category.level_2.name,
+                activity.category.level_3.name,
+            ],
+            location=GroupLocation.build_from_db(
+                group.address,
+                user_location
+            ),
+            schedule=schedule
         )

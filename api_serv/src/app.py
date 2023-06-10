@@ -1,30 +1,16 @@
-import os
-
 import uvicorn
-from beanie import init_beanie
 from fastapi import FastAPI, Request, Response
 
-from orm import User, Activity, Group
+from orm.utils import initialize_database
+
 from router import app_router
 
 app = FastAPI(root_path="/")
 
 
-# @app.on_event("startup")
-async def initialize_database():
-    host = os.getenv("MONGO_HOST")
-    database = os.getenv("DATABASE")
-
-    connection_string = f"mongodb://{host}/{database}"
-
-    await init_beanie(
-        connection_string=connection_string,
-        document_models=[
-            User,
-            Activity,
-            Group
-        ]
-    )
+@app.on_event("startup")
+async def init_db():
+    await initialize_database()
 
 
 # handle CORS preflight requests
@@ -52,3 +38,17 @@ app.include_router(app_router)
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=80)
+
+
+"""
+use backend
+
+db.createUser(
+  {
+    user: "mayhack",
+    pwd: "oi2dj8jdo2",
+    roles: [ "readWrite" ]
+  }
+)
+
+"""

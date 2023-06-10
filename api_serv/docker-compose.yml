@@ -16,6 +16,8 @@ services:
     image: mongo:latest
     container_name: mongodb
     restart: always
+    env_file:
+      - mongodb.env
     ports:
       - "27017:27017"
     volumes:

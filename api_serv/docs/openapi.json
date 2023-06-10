@@ -50,20 +50,6 @@
         "summary": "Get Demo Users",
         "description": "Получить пользователей для демо",
         "operationId": "get_demo_users_users_demo_get",
-        "parameters": [
-          {
-            "required": true,
-            "schema": {
-              "title": "Список ID пользователей для демо",
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            },
-            "name": "user_ids",
-            "in": "query"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Список пользователей для демо",
@@ -75,16 +61,6 @@
                   "items": {
                     "$ref": "#/components/schemas/DemoUser"
                   }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -235,8 +211,7 @@
     "/users/{user_id}/recommendations/categories": {
       "get": {
         "tags": [
-          "Пользователи",
-          "Рекомендации пользователя"
+          "Пользователи"
         ],
         "summary": "Get Categories",
         "description": "Получить список категорий активности рекомендованных для пользователя",
@@ -291,8 +266,7 @@
       },
       "post": {
         "tags": [
-          "Пользователи",
-          "Рекомендации пользователя"
+          "Пользователи"
         ],
         "summary": "Post Categories",
         "description": "Задать категории активности для пользователя",
@@ -347,8 +321,7 @@
     "/users/{user_id}/recommendations/groups": {
       "get": {
         "tags": [
-          "Пользователи",
-          "Рекомендации пользователя"
+          "Пользователи"
         ],
         "summary": "Get Groups",
         "description": "Получить список групп рекомендованных для пользователя к посещению",
@@ -394,6 +367,115 @@
                   "items": {
                     "$ref": "#/components/schemas/Group"
                   }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/preferences": {
+      "get": {
+        "tags": [
+          "Глобальные настройки рекомендаций"
+        ],
+        "summary": "Get Preferences",
+        "description": "Получить глобальные настройки рекомендаций",
+        "operationId": "get_preferences_admin_preferences_get",
+        "responses": {
+          "200": {
+            "description": "Глобальные настройки рекомендаций",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Глобальные настройки рекомендаций"
+        ],
+        "summary": "Post Preferences",
+        "description": "Задать глобальные настройки рекомендаций",
+        "operationId": "post_preferences_admin_preferences_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Новые глобальные настройки рекомендаций",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/PostPreferencesRequest"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/stats": {
+      "get": {
+        "tags": [
+          "Глобальные настройки рекомендаций"
+        ],
+        "summary": "Get Stats",
+        "description": "Получить статистику по содержимому топа из group_scores пользователей",
+        "operationId": "get_stats_admin_stats_get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Top",
+              "type": "integer",
+              "default": 3
+            },
+            "name": "top",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Статистика",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatsResponse"
                 }
               }
             }
@@ -479,7 +561,9 @@
           "gender",
           "name",
           "surname",
+          "patron",
           "birthdate",
+          "age",
           "coldStart"
         ],
         "type": "object",
@@ -500,8 +584,16 @@
             "title": "Surname",
             "type": "string"
           },
+          "patron": {
+            "title": "Patron",
+            "type": "string"
+          },
           "birthdate": {
             "title": "Birthdate",
+            "type": "string"
+          },
+          "age": {
+            "title": "Age",
             "type": "string"
           },
           "coldStart": {
@@ -514,11 +606,12 @@
         "title": "GetUserResponse",
         "required": [
           "id",
-          "created",
           "gender",
           "name",
           "surname",
+          "patron",
           "birthdate",
+          "age",
           "coldStart"
         ],
         "type": "object",
@@ -526,11 +619,6 @@
           "id": {
             "title": "Id",
             "type": "integer"
-          },
-          "created": {
-            "title": "Created",
-            "type": "string",
-            "format": "date-time"
           },
           "gender": {
             "title": "Gender",
@@ -544,10 +632,17 @@
             "title": "Surname",
             "type": "string"
           },
+          "patron": {
+            "title": "Patron",
+            "type": "string"
+          },
           "birthdate": {
             "title": "Birthdate",
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
+          },
+          "age": {
+            "title": "Age",
+            "type": "string"
           },
           "coldStart": {
             "title": "Coldstart",
@@ -594,7 +689,6 @@
         "title": "Group",
         "required": [
           "id",
-          "picture",
           "categories",
           "title",
           "description",
@@ -698,14 +792,47 @@
           }
         }
       },
+      "PostPreferencesRequest": {
+        "title": "PostPreferencesRequest",
+        "type": "object",
+        "properties": {
+          "offline": {
+            "title": "Offline",
+            "type": "number"
+          },
+          "group": {
+            "title": "Group",
+            "type": "number"
+          },
+          "outdoor": {
+            "title": "Outdoor",
+            "type": "number"
+          }
+        }
+      },
+      "PreferencesResponse": {
+        "title": "PreferencesResponse",
+        "type": "object",
+        "properties": {
+          "offline": {
+            "title": "Offline",
+            "type": "number",
+            "default": 0.5
+          },
+          "group": {
+            "title": "Group",
+            "type": "number",
+            "default": 0.5
+          },
+          "outdoor": {
+            "title": "Outdoor",
+            "type": "number",
+            "default": 0.5
+          }
+        }
+      },
       "PutUserSettingsRequest": {
         "title": "PutUserSettingsRequest",
-        "required": [
-          "address",
-          "travelTime",
-          "schedule",
-          "diseases"
-        ],
         "type": "object",
         "properties": {
           "address": {
@@ -729,6 +856,44 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "StatsInfo": {
+        "title": "StatsInfo",
+        "required": [
+          "percentage",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "percentage": {
+            "title": "Percentage",
+            "type": "number"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          }
+        }
+      },
+      "StatsResponse": {
+        "title": "StatsResponse",
+        "required": [
+          "offline",
+          "outdoor",
+          "group"
+        ],
+        "type": "object",
+        "properties": {
+          "offline": {
+            "$ref": "#/components/schemas/StatsInfo"
+          },
+          "outdoor": {
+            "$ref": "#/components/schemas/StatsInfo"
+          },
+          "group": {
+            "$ref": "#/components/schemas/StatsInfo"
           }
         }
       },

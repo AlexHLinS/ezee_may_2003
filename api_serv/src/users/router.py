@@ -1,8 +1,7 @@
 import logging
-import os
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, Query
+from fastapi import APIRouter, Body, Depends
 
 from users.models import (
     SettingsUpdated,
@@ -11,8 +10,8 @@ from users.models import (
     PutUserSettingsRequest,
     GetUserSettingsResponse
 )
-from orm import get_users_for_demo, User
-from users.utils import get_user_or_404, parse_address
+from orm.utils import get_users_for_demo, User
+from users.utils import get_user_or_404
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 
@@ -24,15 +23,15 @@ _logger = logging.getLogger(__name__)
     response_description="Список пользователей для демо",
     response_model=List[DemoUser],
 )
-async def get_demo_users(
-        user_ids: List[int] = Query(..., title="Список ID пользователей для демо")
-):
+async def get_demo_users():
     """
     Получить пользователей для демо
     """
-    env = os.getenv("DEMO_USERS")
-    users = await get_users_for_demo(user_ids=user_ids)
+
+    users = await get_users_for_demo()
+
     demo_users = [DemoUser.build_from_db(u) for u in users]
+
     return demo_users
 
 
@@ -62,16 +61,18 @@ async def update_user_settings(
     """
 
     if new_settings.address:
-        user.profile.settings.address = parse_address(new_settings.address)
+        user.profile.settings.address.raw = new_settings.address
 
     if new_settings.travelTime:
-        user.profile.settings.address = parse_address(new_settings.address)
+        user.profile.settings.travel_time = new_settings.travelTime
 
     if new_settings.schedule:
         user.profile.settings.schedule = [i.to_db() for i in new_settings.schedule]
 
     if new_settings.diseases:
         user.profile.settings.diseases = new_settings.diseases
+
+    await user.save()
 
     return SettingsUpdated(user.user_id)
 
