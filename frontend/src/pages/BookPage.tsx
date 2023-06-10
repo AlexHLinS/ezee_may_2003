@@ -18,6 +18,7 @@ import { ActivityCategorySlice } from '../stateManager/ActivityCategories';
 import { SelectedActivitySlice } from '../stateManager/SelectedActivity';
 import { useAppSelector, useAppDispatch } from '../stateManager/hooks';
 import BookCard from '../components/BookCard';
+import { useNavigate } from 'react-router-dom';
 
 export default function BookPage (props) {
 
@@ -26,10 +27,9 @@ export default function BookPage (props) {
   const {selectedPageIndex, prevPageIndex} = useAppSelector(state=>state.selectedAndPrevPageReducer);
   const dispatch = useAppDispatch();
   const { selectedAndPrevPageResolver } = selectedAndPrevPagesSlice.actions;
+  const navigation = useNavigate();
 
   const activityCategoriesId = useAppSelector(state=>state.ActivityCategoriesReducer.map(item=>item.id));
-
-  console.log(selectedPageIndex, prevPageIndex, pageIndex);
 
   return <CSSTransition
       timeout={500}
@@ -46,7 +46,10 @@ export default function BookPage (props) {
                 alignItems='center'
             >
                 <IconButton
-                onClick={()=>dispatch(selectedAndPrevPageResolver(prevPageIndex))}
+                onClick={()=>{
+                    dispatch(selectedAndPrevPageResolver(prevPageIndex));
+                    setTimeout(()=>navigation(prevPageIndex == 5 ? '/groupsmap' : '/groupslist'), 0)
+                }}
                 sx={{
                     position : 'absolute',
                     left : 0

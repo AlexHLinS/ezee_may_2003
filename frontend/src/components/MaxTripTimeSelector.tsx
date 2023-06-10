@@ -19,7 +19,10 @@ export default function MaxTripTimeSelector () {
         if (newValue != null) dispatch(maxTripTimeChange(newValue));
     }
 
-    return <><Box>Допустимое время на дорогу</Box>
+    return <><Box sx={{
+            fontWeight : 600,
+            fontSize : 16
+            }}>Допустимое время на дорогу</Box>
             <ToggleButtonGroup
             className='toggleGroupButton'
             value={maxTripTime}

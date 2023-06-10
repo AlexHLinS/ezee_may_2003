@@ -12,6 +12,7 @@ import { BookingSlice } from '../stateManager/Bookings';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { useNavigate } from 'react-router-dom';
 
 export default function BookCard (params : { activityId : number}) {
 
@@ -27,6 +28,7 @@ export default function BookCard (params : { activityId : number}) {
 
     const weekDays = Array.from(new Set(slots?.map(item=>item.split('. ')[0])).values());
     const timeSlots = Array.from(new Set(slots?.map(item=>item.split('. ')[1])).values());
+    const navigate = useNavigate();
 
     const [weekday, setWeekday] = React.useState<string | null>(null);
     const handleWeekday = (
@@ -50,7 +52,7 @@ export default function BookCard (params : { activityId : number}) {
                 <Box sx={{
                     fontSize : 24,
                     fontWeight : 500,
-                    color : 'red'
+                    color : '#0D54CA'
                 }}>
                 {activityInfo?.title}
                 </Box>
@@ -70,8 +72,8 @@ export default function BookCard (params : { activityId : number}) {
         exclusive
         onChange={handleWeekday}
         >
-            {weekDays.map(weekDay=>(
-                <ToggleButton value={weekDay}>
+            {weekDays.map((weekDay, index)=>(
+                <ToggleButton key={index} value={weekDay}>
                     {weekDay}
                 </ToggleButton>
             ))}
@@ -85,8 +87,8 @@ export default function BookCard (params : { activityId : number}) {
         exclusive
         onChange={handleTimeslot}
         >
-            {timeSlots.map(timeSlot=>(
-                <ToggleButton value={timeSlot}>
+            {timeSlots.map((timeSlot, index)=>(
+                <ToggleButton key={index} value={timeSlot}>
                     {timeSlot.slice(0, 5)}
                 </ToggleButton>
             ))}
@@ -98,6 +100,7 @@ export default function BookCard (params : { activityId : number}) {
             const newBooking = {...activityInfo, timeslot : weekday + ' ' + timeSlot};
             dispatch(setBooking(newBooking));
             dispatch(selectedAndPrevPageResolver(7));
+            setTimeout(()=>navigate('/successbook'), 0);
         }}
         className="actionButton"
         variant="contained"
