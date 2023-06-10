@@ -40,6 +40,7 @@ giga_apikeys = {
 
 root_dir = os.getcwd()
 hobby_file_name = f"{root_dir}/data/hobby.txt"
+dict_excel_file_name = f"{root_dir}/data/dict.xlsx"
 usr_pass_file = f"{root_dir}/data/gpt.token"
 
 #_user, _passwrd = get_giga_user_password_pair(usr_pass_file)
