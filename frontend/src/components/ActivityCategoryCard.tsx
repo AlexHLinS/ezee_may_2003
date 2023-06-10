@@ -10,78 +10,86 @@ import { useAppSelector, useAppDispatch } from '../stateManager/hooks';
 import { ActivityCategorySlice } from '../stateManager/ActivityCategories';
 import { selectedAndPrevPagesSlice } from '../stateManager/SelectedAndPrevPage';
 import { ActivitySlice } from '../stateManager/Activities';
+import { useNavigate } from 'react-router-dom';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
-export default function ActivityCategoryCard (params : { activityCategoryId : number}) {
+export default function ActivityCategoryCard (params : { activityCategoryId : number, index : number}) {
 
-    const { activityCategoryId } = params;
+    const { activityCategoryId, index } = params;
     const dispatch = useAppDispatch();
     const activityCategory = useAppSelector(state=>state.ActivityCategoriesReducer.find(item=>item.id==activityCategoryId));
     const { selectedAndPrevPageResolver } = selectedAndPrevPagesSlice.actions;
-    const { userId } = useAppSelector(state=>state.UserProfileReducer);
+    const userId = useAppSelector(state=>state.SelectedCharacterReducer.id);
     const { setActivities } = ActivitySlice.actions;
+    const navigate = useNavigate();
 
     const fetchGroups = async () => {
-        const response = await fetch(`http://62.109.9.1:1337/users/${userId}/recommendations/groups?category=${activityCategoryId}`);
+        console.log(userId, activityCategoryId);
+        const response = await fetch(`https://alexhlins1.fvds.ru:1338/users/${userId}/recommendations/groups?category=${activityCategory.title}`);
         const resJSON = await response.json();
         const newRes = resJSON.map(item=>{
             item.location.estimatedTime = Math.floor(Math.random() * 100);
             return item;
         })
+        console.log(newRes);
         dispatch(setActivities(newRes));
     }
 
-    console.log(activityCategoryId)
     const [isExpanded, setIsExpanded] = useState(false);
 
-    return <Card className='activityCategoryCard'>
+    return <Card className='activityCategoryCard' sx={{
+        transitionDelay: `${200 * index}ms !important`
+    }}>
         <CardContent className='visible'>
-            <Stack spacing={1.5}>
-            <Stack direction='row' justifyContent='space-between' alignItems='center'>
-                <Box sx={{
-                    fontSize : 24,
-                    fontWeight : 500
-                }}>
-                {activityCategory?.title}
+            <Stack spacing={1.2}>
+                <Stack direction='row' justifyContent='space-between' alignItems='center'>
+                    <Box sx={{
+                        fontSize : 24,
+                        fontWeight : 600
+                    }}>
+                    {activityCategory?.title}
+                    </Box>
+                    <IconButton onClick={()=>setIsExpanded(prev=>!prev)}>
+                        <AddCircleIcon fontSize='large' sx={{
+                            width : 50,
+                            height : 50,
+                            color : '#0D54CA',
+                            transform : isExpanded ? 'rotate(45deg)' : 'rotate(0)'
+                        }}/>
+                    </IconButton>
+                </Stack>
+                <Box sx={{fontSize : 14}}>
+                    сезон - {activityCategory?.season}
                 </Box>
-                <IconButton onClick={()=>setIsExpanded(prev=>!prev)}>
-                    <ExpandMoreIcon sx={{
-                        transform : isExpanded ? 'rotate(180deg)' : 'rotate(0)'
-                    }}/>
-                </IconButton>
-            </Stack>
-            <Box>
-                {activityCategory?.season}
-            </Box>
-            <Stack direction='row' spacing={2}>
-                {activityCategory?.tags.map((tag, index)=>{
-                    return <Box className={index ==0 ? 'activityTagsMain' : 'activityTagsOther'}>{tag}</Box>
-                })}
-            </Stack>
+                <Stack direction='row' spacing={1} width='100%'>
+                    <Button
+                    className="activityCategoryActionButtonMap"
+                    onClick={()=>{
+                        fetchGroups();
+                        dispatch(selectedAndPrevPageResolver(5));
+                        setTimeout(()=>navigate('/groupsmap'), 0);
+                    }}
+                    >Выбрать на карте</Button>
+                    <Button
+                    className="activityCategoryActionButtonList"
+                    onClick={()=>{
+                        fetchGroups();
+                        dispatch(selectedAndPrevPageResolver(4));
+                        setTimeout(()=>navigate('/groupslist'), 0);
+                    }}
+                    >Список адресов</Button>
+                </Stack>
             </Stack>
         </CardContent>
         <Collapse className='expanding' in={isExpanded}>
-            <CardContent>
+            <CardContent sx={{
+                backgroundColor : 'white',
+                borderTop : 'solid 1px black',
+                color : '#0D54CA',
+                textAlign : 'justify'
+            }}>
                 {activityCategory?.description}
             </CardContent>
-            <CardActions sx={{
-                display: 'flex',
-                justifyContent: 'space-around'
-            }}>
-                <Button
-                className="activityCategoryActionButtonList"
-                onClick={()=>{
-                    fetchGroups();
-                    dispatch(selectedAndPrevPageResolver(4))
-                }}
-                >Выбрать в списке</Button>
-                <Button
-                className="activityCategoryActionButtonMap"
-                onClick={()=>{
-                    fetchGroups();
-                    dispatch(selectedAndPrevPageResolver(5))
-                }}
-                >Выбрать на карте</Button>
-            </CardActions>
         </Collapse>
     </Card>
 }

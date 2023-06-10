@@ -12,30 +12,67 @@
     font-weight: 500;
   }
 
+  @font-face {
+    font-family: "RF Dewi";
+    src: url(./fonts/RFDewi-Regular.ttf);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  @font-face {
+    font-family: "RF Dewi";
+    src: url(./fonts/RFDewi-Semibold.ttf);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  @font-face {
+    font-family: "RF Dewi";
+    src: url(./fonts/RFDewi-Bold.ttf);
+    font-style: normal;
+    font-weight: 700;
+  }
+
 * {
-    font-family: 'GT Eesti Pro Text';
+    font-family: 'RF Dewi';
     box-sizing: border-box;
     letter-spacing: -0.02em;
 }
 
-.mainContainer {
-    width: 100%;
-    height: max-content;
-    padding: 20px;
-    position: absolute;
+*::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .mainContainer {
+        width: 100%;
+        height: 99%;
+        padding: 20px;
+        position: absolute;
+        overflow-y: scroll;
+    }
+}
+
+@media not (max-width: 600px) {
+    .mainContainer {
+        width: 600px;
+        height: 99%;
+        padding: 20px;
+        position: absolute;
+        overflow-y: scroll;
+    }
 }
 
 .hintLabel {
-    font-family: 'GT Eesti Pro Text';
-    font-weight: 400;
-    font-size: 12px;
+    font-weight: 600;
+    font-size: 24px;
     line-height: 20px;
-    color: #8C8C8C;
+    color: #0D54CA;
 }
 
 .mainLabel {
-    font-family: 'GT Eesti Pro Text';
-    font-weight: 500;
+    // font-family: 'GT Eesti Pro Text';
+    font-weight: 600;
     font-size: 24px;
     line-height: 20px;
 }
@@ -54,47 +91,65 @@
 }
 
 .MuiAutocomplete-option {
-    font-family: 'GT Eesti Pro Text';
+    // font-family: 'GT Eesti Pro Text';
     font-weight: 400;
+    font-size: 16px;
 }
 
 .MuiAutocomplete-popperDisablePortal {
-    border: solid 1px #B3B3B3;
+    border: solid 1px #000000;
     box-shadow: none;
 }
 
 .inputTextField .MuiFormLabel-root, .inputTextField .MuiFormLabel-root.Mui-focused {
-    font-family: 'GT Eesti Pro Text';
     font-weight: 400;
-    color: #8C8C8C;
+    color: #0D54CA;
+}
+
+input {
+    font-family: RF Dewi !important;
+    font-weight: 400 !important;
+    color: black !important;
 }
 
 .actionButton.MuiButtonBase-root,  .actionButton.MuiButtonBase-root:hover{
-    background-color: #F7F5ED;
-    border: 2px solid #C5B577;
+    background-color: black;
     box-shadow: none;
     border-radius: 16px;
-    font-family: 'GT Eesti Pro Text';
+    font-family: 'RF Dewi';
     font-weight: 400;
+    color: white;
+    text-transform: none;
+    font-size: 16px;
+}
+
+.questionButton.MuiButtonBase-root,  .questionButton.MuiButtonBase-root:hover{
+    background-color: white;
+    box-shadow: none;
+    border-radius: 16px;
+    font-family: 'RF Dewi';
+    font-weight: 600;
     color: black;
     text-transform: none;
-    font-size: 14px;
+    font-size: 24px;
+    border : 1px solid black;
+    line-height: 30px;
 }
 
 .toggleGroupButton button {
     line-height: 20px !important;
     padding:  6px 10px !important;
     text-transform: none !important;
-    color : #C5B577;
-    border: solid 1px #C5B577 !important;
+    color : black;
+    border: solid 1px black !important;
     border-radius: 20px !important;
-    font-family: 'GT Eesti Pro Text';
+    // font-family: 'GT Eesti Pro Text';
     font-weight: 400;
     font-size: 24px;
 }
 
 .toggleGroupButton button.Mui-selected {
-    background-color: #CC2222 !important;
+    background-color: #0D54CA !important;
     color : white !important;
 }
 
@@ -108,13 +163,100 @@
 }
 
 .activityCategoryCard .visible {
-    background: #F7F5ED;
+    background: white;
     border-radius: 10px;
 }
 
 .activityCategoryCard {
     box-shadow: none !important;
+    border: 1px solid black;
+    border-radius: 8px !important;
 }
+
+.activityCategoryCard-appear {
+    opacity: 0;
+    scale: 0 1;
+    translate: 0 100%;
+}
+
+.activityCategoryCard-appear-active {
+    opacity: 1;
+    scale: 1 1;
+    translate: 0 0;
+    transition:
+        opacity 500ms cubic-bezier(0.46, 0, 0, 1.01),
+        scale 500ms cubic-bezier(0.58, 0.02, 0, 0.96),
+        translate 500ms ease-out !important;
+}
+
+.activityCategoryCard-enter {
+    opacity: 0;
+    scale: 0 1;
+    translate: 0 100%;
+}
+
+.activityCategoryCard-enter-active {
+    opacity: 1;
+    scale: 1 1;
+    translate: 0 0;
+    transition:
+        opacity 500ms cubic-bezier(0.46, 0, 0, 1.01),
+        scale 500ms cubic-bezier(0.58, 0.02, 0, 0.96),
+        translate 500ms ease-out !important;
+}
+
+.activityCard-appear {
+    opacity: 0;
+    scale: 0 1;
+    translate: 0 100%;
+}
+
+.activityCard-appear-active {
+    opacity: 1;
+    scale: 1 1;
+    translate: 0 0;
+    transition:
+        opacity 500ms cubic-bezier(0.46, 0, 0, 1.01),
+        scale 500ms cubic-bezier(0.58, 0.02, 0, 0.96),
+        translate 500ms ease-out !important;
+}
+
+.activityCard-enter {
+    opacity: 0;
+    scale: 0 1;
+    translate: 0 100%;
+}
+
+.activityCard-enter-active {
+    opacity: 1;
+    scale: 1 1;
+    translate: 0 0;
+    transition:
+        opacity 500ms cubic-bezier(0.46, 0, 0, 1.01),
+        scale 500ms cubic-bezier(0.58, 0.02, 0, 0.96),
+        translate 500ms ease-out !important;
+}
+
+.recommendationcard-enter {
+    opacity: 0;
+    height: 0;
+}
+
+.recommendationcard-enter-active {
+    opacity: 1;
+    height : 130px;
+    transition-property: height, opacity !important;
+    transition-duration: 300ms !important;
+    transition-timing-function: ease-in !important;
+}
+
+// .recommendationcard-exit {
+//     opacity: 1;
+// }
+// .recommendationcard-exit-active {
+//     opacity: 0;
+//     transition: opacity 500ms ease-in;
+// }
 
 .bookCard {
     background-color: white;
@@ -126,21 +268,24 @@
 }
 
 .activityCategoryCard .activityCategoryActionButtonList, .activityCategoryCard .activityCategoryActionButtonList:hover{
-    background-color: #c5b577;
+    background-color: white;
     border-radius : 30px;
+    border: 1px solid black;
     color: black;
     text-transform: none;
-    font-family: 'GT Eesti Pro Text';
     width : 50%;
+    font-size: 14px;
 }
 
 .activityCategoryCard .activityCategoryActionButtonMap, .activityCategoryCard .activityCategoryActionButtonMap:hover{
-    background-color: #c22;
+    background-color: black;
     border-radius : 30px;
     color: white;
     text-transform: none;
-    font-family: 'GT Eesti Pro Text';
     width : 50%;
+    font-size: 14px;
+    padding-left : 0;
+    padding-right : 0;
 }
 
 .activityCategoryCard .activityTagsMain {
@@ -172,15 +317,15 @@
     color : black;
     border-radius: 16px !important;
     border: none !important;
-    font-family: 'GT Eesti Pro Text';
-    font-weight: 400;
+    font-weight: 600;
     font-size: 18px;
     width : 49%;
 }
 
 .toggleGroupButton button.activityCategoriesBookingsTab.Mui-selected {
-    background-color: #c5b577 !important;
-    color: black !important;
+    background-color: white !important;
+    color: #0D54CA !important;
+    border : 2px solid #0D54CA !important;
 }
 
 // .activityCategoriesTab {
@@ -200,11 +345,11 @@
 // -----
 
 .startChat.MuiButtonBase-root {
-    background-color: #c22 !important;
+    background-color: #0D54CA !important;
     color: white !important;
-    font-family: 'GT Eesti Pro Text' !important;
-    font-size: 20px !important;
-    font-weight: 500 !important;
+    // font-family: 'GT Eesti Pro Text' !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
     text-transform: none !important;
     border-radius: 16px !important;
     text-align: start !important;
@@ -292,51 +437,132 @@
 
 .driver-card {
     width: 250px;
-    height: 200px;
+    height: 300px;
     overflow-y: scroll;
 }
 
 .bookButton {
-    background-color: #CC2222 !important;
+    background-color: black !important;
     color: white !important;
     border-radius: 10px !important;
     padding: 0 10px !important;
     text-transform: none !important;
-    font-family: 'GT Eesti Pro Text' !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    width : 150px !important;
+    height : 40px !important;
+    border-radius: 16px !important;
+    // font-family: 'GT Eesti Pro Text' !important;
 }
 
 .page-transition-forward-enter {
     transform: translateX(100%);
+    opacity: 0;
 }
 
 .page-transition-forward-enter-active {
     transform: translateX(0%);
-    transition: transform 300ms ease-in;
+    opacity: 1;
+    transition: transform 500ms cubic-bezier(0.79, 0.01, 0.29, 0.98),
+    opacity 500ms cubic-bezier(0.65, 0.01, 0.41, 0.98);
+    // transition-property: transform, opacity;
+    // transition-duration: 500ms;
+    // transition-timing-function: cubic-bezier(0.79, 0.01, 0.29, 0.98) cubic-bezier(0.65, 0.01, 0.41, 0.98);
+    // transition: opacity 300ms ease-in;
 }
 
 .page-transition-forward-exit {
     transform: translateX(0%);
+    opacity: 1;
 }
 
 .page-transition-forward-exit-active {
     transform: translateX(-100%);
-    transition: transform 300ms ease-in;
+    opacity: 0;
+    transition: transform 500ms cubic-bezier(0.79, 0.01, 0.29, 0.98),
+    opacity 500ms cubic-bezier(0.65, 0.01, 0.41, 0.98);
+    // transition-property: transform, opacity;
+    // transition-duration: 500ms;
+    // transition-timing-function: cubic-bezier(0.79, 0.01, 0.29, 0.98) cubic-bezier(0.98, 0.01, 1, 1);
 }
 
 .page-transition-backward-enter {
     transform: translateX(-100%);
+    opacity: 0;
 }
 
 .page-transition-backward-enter-active {
     transform: translateX(0%);
-    transition: transform 300ms ease-in;
+    opacity: 1;
+    transition: transform 500ms cubic-bezier(0.79, 0.01, 0.29, 0.98),
+    opacity 500ms cubic-bezier(0.65, 0.01, 0.41, 0.98);
+    // transition-property: transform, opacity;
+    // transition-duration: 500ms;
+    // transition-timing-function: cubic-bezier(0.79, 0.01, 0.29, 0.98) cubic-bezier(0.98, 0.01, 1, 1);
 }
 
 .page-transition-backward-exit {
     transform: translateX(0%);
+    opacity: 1;
 }
 
 .page-transition-backward-exit-active {
     transform: translateX(100%);
-    transition: transform 300ms ease-in;
+    opacity: 0;
+    transition: transform 500ms cubic-bezier(0.79, 0.01, 0.29, 0.98),
+    opacity 500ms cubic-bezier(0.65, 0.01, 0.41, 0.98);
+}
+
+.onboardingDisplay-appear {
+    opacity : 0
+}
+
+.onboardingDisplay-appear-active {
+    opacity : 1;
+    transition: opacity 500ms ease-in;
+}
+
+.onboardingDisplay-exit {
+    opacity : 1
+}
+
+.onboardingDisplay-exit-active {
+    opacity : 0;
+    transition: opacity 200ms ease-out;
+}
+
+
+
+.answersGigachat-appear {
+    opacity : 0;
+    transform : translateX(100%);
+}
+
+.answersGigachat-appear-active {
+    opacity : 1;
+    transform : translateX(0);
+    transition:
+    opacity 300ms ease-in 200ms,
+    transform 300ms ease-in 200ms;
+}
+
+.answersGigachat-enter {
+    opacity : 0;
+    transform : translateX(100%);
+}
+
+.answersGigachat-enter-active {
+    opacity : 1;
+    transform : translateX(0);
+    transition: opacity 300ms ease-in,
+    transform 300ms ease-in 200ms;
+}
+
+.answersGigachat-exit {
+    opacity : 1
+}
+
+.answersGigachat-exit-active {
+    opacity : 0;
+    transition: opacity 300ms ease-out;
 }

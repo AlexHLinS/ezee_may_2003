@@ -6,43 +6,7 @@ interface dayTimes {
     evening : boolean
 };
 
-const initialState: dayTimes[] = [
-    {
-        morning : false,
-        noon : false,
-        evening : false
-    },
-    {
-        morning : false,
-        noon : false,
-        evening : false
-    },
-    {
-        morning : false,
-        noon : false,
-        evening : false
-    },
-    {
-        morning : false,
-        noon : false,
-        evening : false
-    },
-    {
-        morning : false,
-        noon : false,
-        evening : false
-    },
-    {
-        morning : false,
-        noon : false,
-        evening : false
-    },
-    {
-        morning : false,
-        noon : false,
-        evening : false
-    }
-];
+const initialState: dayTimes[] = [];
 
 export const scheduleSlice = createSlice({
   name: 'schedule',
@@ -50,22 +14,14 @@ export const scheduleSlice = createSlice({
   reducers: {
     changeSchedule: (prevSchedule, action : PayloadAction<{
         weekday : number,
-        dayTimes : string[]
+        dayTime : string
     }>) => {
-      const newSchedule = [...prevSchedule];
-      const {weekday, dayTimes} = action.payload;
-
-      newSchedule[weekday] = {
-        morning : false,
-        noon : false,
-        evening : false
-      }
-
-      dayTimes.forEach(daytime=>{newSchedule[weekday][daytime] = true});
-      return newSchedule;
+      const {weekday, dayTime} = action.payload;
+      prevSchedule[weekday][dayTime] = !prevSchedule[weekday][dayTime]
+      return prevSchedule;
     },
     createSchedule : (prevSchedule, action : PayloadAction<dayTimes[]>) => {
-      return { ...action.payload };
+      return action.payload;
     }
   },
 })

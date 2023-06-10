@@ -8,6 +8,15 @@ import ActivitiesMapReducer from './ActivitiesMap';
 import SelectedActivityReducer from './SelectedActivity';
 import BookingReducer from './Bookings';
 import UserProfileReducer from './UserProfile';
+import AnswerReducer from './Answers';
+import RecommendationReducer from './Recommendations';
+import SelectedCharacterReducer from './SelectedСharacter';
+import DisplayNUmberReducer from './displayOnboardingNumber';
+import MainTabReducer from './mainTab';
+import GigachatAnswerReducer from './gigachatAnswers';
+import GigachatQuestionReducer from './gigachatQuestions';
+import HistoryReducer from './HistoryGPT';
+import AgeGenderReducer from './AgeAndGender';
 
 const rootReducer = combineReducers({
     selectedAndPrevPageReducer,
@@ -18,7 +27,16 @@ const rootReducer = combineReducers({
     ActivitiesMapReducer,
     SelectedActivityReducer,
     BookingReducer,
-    UserProfileReducer
+    UserProfileReducer,
+    AnswerReducer,
+    RecommendationReducer,
+    SelectedCharacterReducer,
+    DisplayNUmberReducer,
+    MainTabReducer,
+    GigachatQuestionReducer,
+    GigachatAnswerReducer,
+    HistoryReducer,
+    AgeGenderReducer
 })
 
 const store = configureStore({
