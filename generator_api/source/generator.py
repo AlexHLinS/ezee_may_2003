@@ -285,7 +285,7 @@ async def send_prompt_to_giga_with_history(
     prompt: str,
     token: str,
     previous_dialog: list = [],
-    history: list = [],
+    history: list = None,
     model: str = "GigaChat:v1.5.0",
     url: str = giga_apikeys['POST_chat'],
 ) -> tuple:
@@ -304,7 +304,11 @@ async def send_prompt_to_giga_with_history(
         "Contenr-Type": "application/json"
     }
 
-    msg = history
+    if not history:
+        msg = []
+    else:
+        msg = [*history]
+        
     msg.append({"role": "user", "content": prompt})
 
     answer = ChatCompletion.create(model=model,
@@ -418,7 +422,7 @@ async def ask_q2(data: Payload_q2) -> Answer_q2 | ErrorAnswer:
 
     for i in range(5):
         recomendations.append(ans_list[int(random()*len(ans_list))].strip())
-
+    
     return Answer_q2(
         recomendations=recomendations,
     )
